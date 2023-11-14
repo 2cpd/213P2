@@ -36,12 +36,17 @@ public class LoginController {
 		if (enteredText.equals("admin")) {
 			root = FXMLLoader.load(getClass().getResource("Admin.fxml"));
 		}
-		else {
+		else if (enteredText.equals("user")) {
 			root = FXMLLoader.load(getClass().getResource("User.fxml"));
 		}
-		//else if == user: regular User subsystem
-		//else: error msg
-		//--TO BE IMPLEMENTED--
+		else {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("ERROR");
+			alert.setHeaderText("User Not Found");
+			alert.setContentText("Enter a valid admin/regular username");
+			alert.showAndWait();
+			return;
+		}
 		
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 		scene = new Scene(root,640,480);
