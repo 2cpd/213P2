@@ -16,6 +16,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.Node;
 import javafx.stage.Stage;
 
@@ -56,9 +57,25 @@ public class UserController {
 		inputDialog.setTitle("New Album");
 		inputDialog.setHeaderText("New Album");
 		inputDialog.setContentText("Enter name for new album...");
-		Optional<String> nameInput = inputDialog.showAndWait();
 		
-		if (nameInput.get().equals("")){
+		/*final Button ok = (Button) inputDialog.getDialogPane().lookupButton(ButtonType.OK);
+        ok.addEventFilter(ActionEvent.ACTION, event2 ->
+            System.out.println("OK was definitely pressed")
+        );*/
+
+        /*final Button cancel = (Button) inputDialog.getDialogPane().lookupButton(ButtonType.CANCEL);
+        cancel.addEventFilter(ActionEvent.ACTION, event2 ->{
+        	System.out.println("Cancel was definitely pressed");
+        	return;
+            }
+        );*/
+        
+        Optional<String> nameInput = inputDialog.showAndWait();
+		
+        if (!nameInput.isPresent()){
+			return;
+		}
+        else if (nameInput.get().isEmpty()){
 			//System.out.println("name is empty");
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("ERROR");
@@ -67,14 +84,14 @@ public class UserController {
 			alert.showAndWait();
 			return;
 		}
-		
-		//else
-		System.out.println(nameInput.get());
-		//add new album to user's library
+		else {
+			System.out.println(nameInput.get());
+			//add new album to user's library
+		}
 	}
 	
 	public void renameAlbum(ActionEvent event) throws IOException {
-			//if name match: ask for new name
-			//else if nothing entered/nomatch: errormsg
+		//if name match: ask for new name
+		//else if nothing entered/nomatch: errormsg
 	}
 }
