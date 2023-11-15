@@ -3,6 +3,7 @@ package application;
 
 import java.io.IOException;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -21,8 +22,12 @@ public class AdminController {
 	private Scene scene;
 	private Parent root;
 	
+	@FXML
+	MenuBar myMenuBar;
+	
+	//list users upon login
+	
 	public void logout(ActionEvent event) throws IOException {
-		
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Logout?");
 		alert.setHeaderText("Logout of your account?");
@@ -30,8 +35,8 @@ public class AdminController {
 		
 		if(alert.showAndWait().get() == ButtonType.OK) {
 			root = FXMLLoader.load(getClass().getResource("Login.fxml"));
-			stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-			scene = new Scene(root);
+			stage = (Stage) myMenuBar.getScene().getWindow();
+			scene = new Scene(root,640,480);
 			stage.setScene(scene);
 			stage.show();
 		}
