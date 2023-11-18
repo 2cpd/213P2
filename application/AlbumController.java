@@ -34,21 +34,15 @@ public class AlbumController {
 	MenuBar myMenuBar;
 	
 	@FXML
-    private ListView<String> listOfAlbums;
+    ListView<String> listOfPhotos;
 	
 	public void returnToUser(ActionEvent event) throws IOException {
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.setTitle("Return?");
-		alert.setHeaderText("Return to Album Selection?");
-		alert.setContentText("Changes will be saved.");
-		
-		if(alert.showAndWait().get() == ButtonType.OK) {
-			root = FXMLLoader.load(getClass().getResource("User.fxml"));
-			stage = (Stage) myMenuBar.getScene().getWindow();
-			scene = new Scene(root,640,480);
-			stage.setScene(scene);
-			stage.show();
-		}
+		root = FXMLLoader.load(getClass().getResource("/View/User.fxml"));
+		stage = (Stage) myMenuBar.getScene().getWindow();
+		scene = new Scene(root,640,480);
+		stage.setScene(scene);
+		stage.show();
+		//maybe: add closer all other windows functionality
 	}
 	
 	public void help(ActionEvent event) throws IOException {
@@ -56,7 +50,7 @@ public class AlbumController {
 		//String albumName = xxx.get();
 		alert.setTitle("About This Page");
 		alert.setHeaderText("Album Page");
-		alert.setContentText("Here, you can add, rename or delete photos, search for a specific photo, ");
+		alert.setContentText("Here, you can add, rename or delete photos, search for a specific photo, view a photo in a new window, or return to the previous page.");
 		alert.showAndWait();
 	}
 	
@@ -72,15 +66,31 @@ public class AlbumController {
         //Show open file dialog
         File file = fileChooser.showOpenDialog(null);
                   
-        if (file != null) {
-            Image image = new Image(file.toURI().toString());
-            imageView.setImage(image);
+        if (file == null) {
+            //error msg
         }
+        else {
+        	Image image = new Image(file.toURI().toString());
+            imageView.setImage(image);
+            
+            String name = file.getName();
+            listOfPhotos.getItems().add(name);
+            //also add create new Photo object (TBI)
+        }
+        
+        //Needs fix: currently shows photo on right side of ui right when added
+        //Add photo name to list, and only show when list item is selected
     }
 	
-	public void viewInNew(ActionEvent event) {
-		
+	public void viewInNew(ActionEvent event) throws IOException {
+		root = FXMLLoader.load(getClass().getResource("/View/PhotoView.fxml"));
+		Stage newStage = new Stage();
+		newStage.setTitle("uPhotos");
+		scene = new Scene(root,640,480); //needs fix:change to photo's resolution
+		newStage.setScene(scene);
+		newStage.show();
 	}
+	
 	/*
 	 * functionalities:
 	 * menubar: add photo, return to albums page, search
