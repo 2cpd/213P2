@@ -37,7 +37,8 @@ public class UserController {
 	private Stage stage;
 	private Scene scene;
 	private Parent root;
-	final User user = new User("user"); //temporary name
+	public static User user = new User("user"); //temporary name
+	public static String goToAlbumName;
 	@FXML
 	MenuBar myMenuBar;
 	
@@ -197,7 +198,7 @@ public class UserController {
 		
 		if (oldName.isEmpty() || newName.isEmpty()) {
 			Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("Rename Album");
+			alert.setTitle("ERROR");
 			alert.setHeaderText("Empty Name Entry");
 			alert.setContentText("Cannot rename an album to an empty name!");
 			alert.showAndWait();
@@ -209,7 +210,7 @@ public class UserController {
 			listOfAlbums.getItems().set(albumIndex, newName);
 		} else {
 			Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("Rename Album");
+			alert.setTitle("ERROR");
 			alert.setHeaderText("Error");
 			alert.setContentText("Please check if the original album name is entered correctly!");
 			alert.showAndWait();
@@ -219,10 +220,85 @@ public class UserController {
 	
 	//TO BE DELETED
 	public void test_goToAlbum(ActionEvent event) throws IOException {
-		root = FXMLLoader.load(getClass().getResource("/View/Album.fxml"));
-		stage = (Stage) myMenuBar.getScene().getWindow();
+		TextInputDialog inputDialog = new TextInputDialog();
+		inputDialog.setTitle("Choose Album");
+		inputDialog.setHeaderText("Album Openner");
+		inputDialog.setContentText("Enter name of the album you want to access...");
+		//inputDialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+        
+        Optional<String> nameInput = inputDialog.showAndWait();
+        
+        if(!nameInput.isPresent()) {
+			return;
+        }
+        
+        goToAlbumName = nameInput.get();
+        if (user.getAlbumByName(goToAlbumName) == null) {
+        	Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("ERROR");
+			alert.setHeaderText("No Name Match");
+			alert.setContentText("Please check if the album name is entered correctly!");
+			alert.showAndWait();
+			return;
+        } else {
+        	root = FXMLLoader.load(getClass().getResource("/View/Album.fxml"));
+    		stage = (Stage) myMenuBar.getScene().getWindow();
+    		scene = new Scene(root,640,480);
+    		stage.setScene(scene);
+    		stage.show();
+        }
+	}
+	
+	public void searchByDate(ActionEvent event) throws IOException {
+		Dialog<Pair<String, String>> searchDialog = new Dialog<>();
+		searchDialog.setTitle("Search by Date");
+		searchDialog.setHeaderText("Enter the date range of your search:");
+		
+		ButtonType okButton = new ButtonType("OK", ButtonData.OK_DONE);
+		searchDialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
+		
+		GridPane searchGrid = new GridPane();
+		searchGrid.setHgap(20);
+		searchGrid.setVgap(20);
+		searchGrid.setPadding(new Insets(20, 150, 10, 10));
+		
+		TextField fromWhen = new TextField();
+	    TextField toWhen = new TextField();
+	    
+	    searchGrid.add(fromWhen, 0, 1);
+	    searchGrid.add(new Label("From:"), 0, 0);
+	    searchGrid.add(toWhen, 1, 1);
+	    searchGrid.add(new Label("To:"), 1, 0);
+	    
+	    searchDialog.getDialogPane().setContent(searchGrid);
+	    
+	    searchDialog.showAndWait();
+		
+		String startDate = fromWhen.getText().strip();
+		String endDate = toWhen.getText().strip();
+		//make sure date entry is formatted correctly
+		
+		if (startDate.isEmpty() || endDate.isEmpty()) {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("ERROR");
+			alert.setHeaderText("Empty Date Entry");
+			alert.setContentText("Cannot rename an album to an empty name!");
+			alert.showAndWait();
+			return;
+		}
+        
+		//if no match found: errormsg, no match found, no new window
+        //else
+		root = FXMLLoader.load(getClass().getResource("/View/Search.fxml"));
+		Stage newStage = new Stage();
+		newStage.setTitle("uPhotos");
 		scene = new Scene(root,640,480);
-		stage.setScene(scene);
-		stage.show();
+		newStage.setScene(scene);
+		newStage.show();
+		
+		//implement way to create new temporary list of photos to be shown in album.fxml
+	}
+	
+	public void searchByTag(ActionEvent event) throws IOException {
 	}
 }
