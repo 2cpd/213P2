@@ -38,68 +38,38 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.UserController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.SearchController">
    <children>
       <MenuBar fx:id="myMenuBar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#createAlbum" text="New album..." />
-                  <MenuItem mnemonicParsing="false" onAction="#deleteAlbum" text="Delete album..." />
-                  <MenuItem mnemonicParsing="false" onAction="#renameAlbum" text="Rename album..." />
-                  <Menu mnemonicParsing="false" text="Search...">
-                    <items>
-                      <MenuItem mnemonicParsing="false" onAction="#searchByDate" text="By date..." />
-                        <MenuItem mnemonicParsing="false" onAction="#searchByTag" text="By tag..." />
-                    </items>
-                  </Menu>
+                  <MenuItem mnemonicParsing="false" text="Create new album with results..." />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="User">
-               <items>
-                  <MenuItem mnemonicParsing="false" onAction="#showUsername" text="Show username..." />
-                  <MenuItem mnemonicParsing="false" onAction="#logout" text="Logout..." />
-               </items>
-            </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
               <MenuItem mnemonicParsing="false" onAction="#help" text="About..." />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="#TEST DELETE LATER#">
-               <items>
-                  <MenuItem mnemonicParsing="false" onAction="#test_goToAlbum" text="#goToAlbum#" />
-               </items>
-            </Menu>
         </menus>
       </MenuBar>
-      <ListView fx:id="listOfAlbums" layoutY="148.0" maxWidth="200.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="50.0">
+      <ListView fx:id="photoList" layoutY="50.0" maxWidth="200.0" prefHeight="390.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="50.0">
          <contextMenu>
             <ContextMenu>
               <items>
-                <MenuItem mnemonicParsing="false" text="Unspecified Action" />
+                <MenuItem mnemonicParsing="false" text="biech" />
               </items>
             </ContextMenu>
          </contextMenu></ListView>
-      <AnchorPane layoutX="200.0" layoutY="25.0" prefHeight="455.0" prefWidth="440.0">
+      <AnchorPane layoutX="200.0" layoutY="25.0" prefHeight="406.0" prefWidth="364.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
          <children>
-            <Label alignment="CENTER" layoutX="20.0" layoutY="273.0" prefHeight="60.0" prefWidth="400.0" text="Welcome to uPhotos!" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
-               <font>
-                  <Font name="Comic Sans MS" size="28.0" />
-               </font>
-            </Label>
-            <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="120.0" layoutY="123.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../Data/uphotos.png" />
-               </image>
-            </ImageView>
+            <ImageView fx:id="imageView" fitHeight="390.0" fitWidth="400.0" layoutX="20.0" layoutY="78.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="45.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0" />
          </children>
       </AnchorPane>
-      <Label layoutX="14.0" layoutY="25.0" prefHeight="25.0" prefWidth="150.0" text="List of Albums" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="25.0" />
+      <Label layoutY="25.0" prefHeight="25.0" prefWidth="150.0" text="Results" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="25.0" />
    </children>
 </AnchorPane>
