@@ -15,6 +15,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -35,15 +36,16 @@ import javafx.util.Pair;
 public class UserController {
 	
 	private Stage stage;
-	private Scene scene;
+	public Scene scene;
 	private Parent root;
 	public static User user = new User("user"); //temporary name
 	public static String goToAlbumName;
+	private Scene preScene;
 	@FXML
 	MenuBar myMenuBar;
 	
 	@FXML
-    private ListView<String> listOfAlbums;
+    private ListView<String> listOfAlbums = new ListView<String>(user.getAlbumNameList());
 	
 	public void showUsername(ActionEvent e) {
 		Alert alert = new Alert(AlertType.INFORMATION);
@@ -53,6 +55,10 @@ public class UserController {
 		alert.showAndWait();
 	}
 	
+	public void setPrescene(Scene tempScene) {
+		this.preScene = tempScene;
+	}
+	
 	public void logout(ActionEvent event) throws IOException {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Logout?");
@@ -60,10 +66,22 @@ public class UserController {
 		alert.setContentText("Changes will be saved.");
 		
 		if(alert.showAndWait().get() == ButtonType.OK) {
-			root = FXMLLoader.load(getClass().getResource("/View/Login.fxml"));
+			//root = FXMLLoader.load(getClass().getResource("/View/Login.fxml"));
+			//stage = (Stage) myMenuBar.getScene().getWindow();
+			//scene = new Scene(root,640,480);
+			//stage.setScene(scene);
+			//stage.show();
+			//stage = (Stage) myMenuBar.getScene().getWindow();
+    		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/Login.fxml"));
+            scene = new Scene(fxmlLoader.load(), 640, 480);
+            LoginController controller = fxmlLoader.getController();
+    		controller.setPrescene(myMenuBar.getScene());
+            //stage.setScene(scene);
+    		//stage.show();
+    		
+    		
 			stage = (Stage) myMenuBar.getScene().getWindow();
-			scene = new Scene(root,640,480);
-			stage.setScene(scene);
+			stage.setScene(preScene);
 			stage.show();
 		}
 	}
@@ -91,23 +109,21 @@ public class UserController {
         }
         
         String name = nameInput.get();
-        
-        
 		
         if (name.isEmpty()){
         	Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("ERROR");
+			alert.setTitle("New Album");
 			alert.setHeaderText("Empty Name Entry");
 			alert.setContentText("Cannot initialize an album with no name!");
 			alert.showAndWait();
 			return;
 		}
         
-        if (!user.createAlbum(name)  ){
+        if (!user.createAlbum(name)){
 			//System.out.println("name is empty");
 			Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("ERROR");
-			alert.setHeaderText("Duplicate Name Entry");
+			alert.setTitle("New Album");
+			alert.setHeaderText("Error");
 			alert.setContentText("Please try different name.");
 			alert.showAndWait();
 			return;
@@ -135,7 +151,7 @@ public class UserController {
         
         if (name.isEmpty()){
         	Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("ERROR");
+			alert.setTitle("Delete Album");
 			alert.setHeaderText("Empty Name Entry");
 			alert.setContentText("Cannot delete an album with an empty name!");
 			alert.showAndWait();
@@ -145,7 +161,7 @@ public class UserController {
         int indexOfTargetAlbum = user.getAlbumIndex(name);
         if (indexOfTargetAlbum == -1) {
         	Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("ERROR");
+			alert.setTitle("Delete Album");
 			alert.setHeaderText("Invalid Name Entry");
 			alert.setContentText("No album of that name exists!");
 			alert.showAndWait();
@@ -191,38 +207,43 @@ public class UserController {
 	    
 	    renameDialog.getDialogPane().setContent(renameGrid);
 	    
+	    Button ok = (Button) renameDialog.getDialogPane().lookupButton(okButton);
+	    ok.addEventFilter(ActionEvent.ACTION, mouseClickEvent -> {
+	        String oldName = oldAlbumName.getText().strip();
+	        String newName = newAlbumName.getText().strip();
+	        
+	        if (oldName.isEmpty() || newName.isEmpty()) {
+	            Alert alert = new Alert(AlertType.ERROR);
+	            alert.setTitle("Rename Album");
+	            alert.setHeaderText("Empty Name Entry");
+	            alert.setContentText("Cannot rename an album to an empty name!");
+	            alert.showAndWait();
+	            event.consume(); // Prevent dialog from closing
+	        }
+	        else {
+	        	int albumIndex = user.getAlbumIndex(oldName);
+	    		if (user.renameAlbum(oldName, newName)) {
+	    			listOfAlbums.getItems().set(albumIndex, newName);
+	    		} else {
+	    			Alert alert = new Alert(AlertType.ERROR);
+	    			alert.setTitle("Rename Album");
+	    			alert.setHeaderText("Error");
+	    			alert.setContentText("Please check if the original album name is entered correctly!");
+	    			alert.showAndWait();
+	    			return;
+	    		}
+	        }
+	    });
+	    
 	    renameDialog.showAndWait();
-		
-		String oldName = oldAlbumName.getText().strip();
-		String newName = newAlbumName.getText().strip();
-		
-		if (oldName.isEmpty() || newName.isEmpty()) {
-			Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("ERROR");
-			alert.setHeaderText("Empty Name Entry");
-			alert.setContentText("Cannot rename an album to an empty name!");
-			alert.showAndWait();
-			return;
-		}
-		
-		int albumIndex = user.getAlbumIndex(oldName);
-		if (user.renameAlbum(oldName, newName)) {
-			listOfAlbums.getItems().set(albumIndex, newName);
-		} else {
-			Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("ERROR");
-			alert.setHeaderText("Error");
-			alert.setContentText("Please check if the original album name is entered correctly!");
-			alert.showAndWait();
-			return;
-		}
 	}
 	
 	//TO BE DELETED
-	public void test_goToAlbum(ActionEvent event) throws IOException {
+	public void goToAlbum(ActionEvent event) throws IOException {
+		//get album name, then go to specific album
 		TextInputDialog inputDialog = new TextInputDialog();
 		inputDialog.setTitle("Choose Album");
-		inputDialog.setHeaderText("Album Openner");
+		inputDialog.setHeaderText("Album Opener");
 		inputDialog.setContentText("Enter name of the album you want to access...");
 		//inputDialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
         
@@ -233,20 +254,26 @@ public class UserController {
         }
         
         goToAlbumName = nameInput.get();
+        //ListView<String> tempList = listOfAlbums;
         if (user.getAlbumByName(goToAlbumName) == null) {
         	Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("ERROR");
-			alert.setHeaderText("No Name Match");
+			alert.setTitle("Enter Album");
+			alert.setHeaderText("Error");
 			alert.setContentText("Please check if the album name is entered correctly!");
 			alert.showAndWait();
 			return;
         } else {
-        	root = FXMLLoader.load(getClass().getResource("/View/Album.fxml"));
     		stage = (Stage) myMenuBar.getScene().getWindow();
-    		scene = new Scene(root,640,480);
-    		stage.setScene(scene);
+    		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/Album.fxml"));
+            scene = new Scene(fxmlLoader.load(), 640, 480);
+            AlbumController controller = fxmlLoader.getController();
+    		controller.setPrescene(myMenuBar.getScene());
+            stage.setScene(scene);
     		stage.show();
+    		
         }
+        //listOfAlbums = tempList;
+        
 	}
 	
 	public void searchByDate(ActionEvent event) throws IOException {
@@ -280,7 +307,7 @@ public class UserController {
 		
 		if (startDate.isEmpty() || endDate.isEmpty()) {
 			Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("ERROR");
+			alert.setTitle("Search by Date");
 			alert.setHeaderText("Empty Date Entry");
 			alert.setContentText("Cannot rename an album to an empty name!");
 			alert.showAndWait();
@@ -301,4 +328,5 @@ public class UserController {
 	
 	public void searchByTag(ActionEvent event) throws IOException {
 	}
+	
 }
