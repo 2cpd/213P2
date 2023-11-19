@@ -52,6 +52,7 @@
               <MenuItem mnemonicParsing="false" onAction="#createAlbum" text="New album..." />
                   <MenuItem mnemonicParsing="false" onAction="#deleteAlbum" text="Delete album..." />
                   <MenuItem mnemonicParsing="false" onAction="#renameAlbum" text="Rename album..." />
+                  <MenuItem mnemonicParsing="false" onAction="#goToAlbum" text="View contents of an album..." />
                   <Menu mnemonicParsing="false" text="Search...">
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#searchByDate" text="By date..." />
@@ -71,11 +72,6 @@
               <MenuItem mnemonicParsing="false" onAction="#help" text="About..." />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="#TEST DELETE LATER#">
-               <items>
-                  <MenuItem mnemonicParsing="false" onAction="#goToAlbum" text="#goToAlbum#" />
-               </items>
-            </Menu>
         </menus>
       </MenuBar>
       <ListView fx:id="listOfAlbums" layoutY="148.0" maxWidth="200.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="50.0">
