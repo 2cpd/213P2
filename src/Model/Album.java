@@ -22,9 +22,8 @@ public class Album implements Serializable {
 	/*
 	 * @param name name of the album
 	 */
-	public Album(String name, User user) {
+	public Album(String name) {
 		this.albumName = name;
-		this.albumOwner = user;
 		this.albumPhoto = new ArrayList<Photo>();
 	}
 	
@@ -101,7 +100,7 @@ public class Album implements Serializable {
 	}
 	
 	public ObservableList<String> getPhotoNameListByFile() throws IOException {
-		File f = new File("data/"+ albumOwner.getUsername() +"photo.txt");
+		/*File f = new File("data/"+ albumOwner.getUsername() +"photo.txt");
 		if(!f.exists() && !f.isDirectory()) { 
 			FileOutputStream createfile = new FileOutputStream("data/"+ albumOwner.getUsername() +"photo.txt");
 			createfile.close();
@@ -151,7 +150,8 @@ public class Album implements Serializable {
 		for (int i = 0; i < finalList.size(); i++) {
 			albums.add(new Album(finalList.get(i)));
 		}
-		return FXCollections.observableList(finalList);
+		return FXCollections.observableList(finalList);*/
+		return null;
 	}
 	
 	/*
