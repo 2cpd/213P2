@@ -1,1 +1,0 @@
-stockAlbum: Bliss.jpg, Hills.jpg, Lillies.jpg, Sunset.jpg, Winter.jpg
