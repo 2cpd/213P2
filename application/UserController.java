@@ -2,12 +2,17 @@ package application;
 
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
+import Model.Album;
+import Model.Photo;
 import Model.User;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,6 +21,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
@@ -39,10 +45,11 @@ public class UserController {
 	
 	private Stage stage;
 	public Scene scene;
-	private Parent root;
-	public static User user = new User("user"); //temporary name
-	public static String goToAlbumName;
 	private Scene preScene;
+	private Parent root;
+	static User user = new User("user"); //temporary name
+	private Album selectedAlbum;
+	
 	@FXML
 	MenuBar myMenuBar;
 	
@@ -52,8 +59,8 @@ public class UserController {
 	public void showUsername(ActionEvent e) {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle("Username");
-		alert.setHeaderText("Username");
-		alert.setContentText("Your username is" + user.getUsername());
+		alert.setHeaderText("Your Username");
+		alert.setContentText("You are logged in as: " + user.getUsername());
 		alert.showAndWait();
 	}
 	
@@ -92,7 +99,7 @@ public class UserController {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle("About This Page");
 		alert.setHeaderText("User Overview Page");
-		alert.setContentText("Here, you can create new albums, rename existing ones, or delete albums altogether. Click on an album to view its contents.");
+		alert.setContentText("Here, you can manage your albums, view the contents within one, or search for photos by date or tag.");
 		alert.showAndWait();
 	}
 	
@@ -126,7 +133,7 @@ public class UserController {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("New Album");
 			alert.setHeaderText("Error");
-			alert.setContentText("Please try different name.");
+			alert.setContentText("Please try a different name.");
 			alert.showAndWait();
 			return;
 		}
@@ -240,7 +247,6 @@ public class UserController {
 	    renameDialog.showAndWait();
 	}
 	
-	//TO BE DELETED
 	public void goToAlbum(ActionEvent event) throws IOException {
 		//get album name, then go to specific album
 		TextInputDialog inputDialog = new TextInputDialog();
@@ -255,7 +261,7 @@ public class UserController {
 			return;
         }
         
-        goToAlbumName = nameInput.get();
+        String goToAlbumName = nameInput.get();
         //ListView<String> tempList = listOfAlbums;
         if (user.getAlbumByName(goToAlbumName) == null) {
         	Alert alert = new Alert(AlertType.ERROR);
@@ -272,7 +278,7 @@ public class UserController {
     		controller.setPrescene(myMenuBar.getScene());
             stage.setScene(scene);
     		stage.show();
-    		
+    		//TBI: navigate to correct album
         }
         //listOfAlbums = tempList;
         
@@ -281,7 +287,7 @@ public class UserController {
 	public void searchByDate(ActionEvent event) throws IOException {
 		Dialog<Pair<String, String>> searchDialog = new Dialog<>();
 		searchDialog.setTitle("Search by Date");
-		searchDialog.setHeaderText("Enter the date range of your search:");
+		searchDialog.setHeaderText("Enter the date range of your search, formatted in YYYY/MM/DD:");
 		
 		ButtonType okButton = new ButtonType("OK", ButtonData.OK_DONE);
 		searchDialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
@@ -350,6 +356,7 @@ public class UserController {
 	            event.consume(); // Prevent dialog from closing
 	        }
 	        else {
+	        	//
 	        	if (enteredFY.length()!=4 || enteredFM.length()!=2 || enteredFD.length()!=2
 		        		|| enteredFY.length()!=4 || enteredFM.length()!=2 || enteredFD.length()!=2) {
 	        		Alert alert = new Alert(AlertType.ERROR);
@@ -360,26 +367,39 @@ public class UserController {
 		            return;
 	        	}
 	        	//implement way to convert date -> calendar
+	        	String fromDateStringForm = enteredFY + "/" + enteredFM + "/" + enteredFD;
+	        	String toDateStringForm = enteredTY + "/" + enteredTM + "/" + enteredTD;
+	        	//ObservableList<Photo> 
+	        	
 	        	//if no match found: errormsg, no match found, no new window
 	    		//implement way to create new temporary list of photos to be shown in album.fxml
 	    		try {
-					root = FXMLLoader.load(getClass().getResource("/View/Search.fxml"));
+	    			ObservableList<Photo> newSearchList = user.searchByCal(fromDateStringForm,toDateStringForm);
+	    			root = FXMLLoader.load(getClass().getResource("/View/Search.fxml"));
+					
+	    			//null exception
+					//SearchController newSearchController = (new FXMLLoader(getClass().getResource("/View/Search.fxml"))).getController();
+					//newSearchController.searchMatches = newSearchList;
+					
+					Stage newStage = new Stage();
+		    		newStage.setTitle("uPhotos");
+		    		scene = new Scene(root,640,480);
+		    		newStage.setScene(scene);
+		    		newStage.show();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-	    		Stage newStage = new Stage();
-	    		newStage.setTitle("uPhotos");
-	    		scene = new Scene(root,640,480);
-	    		newStage.setScene(scene);
-	    		newStage.show();
 	        }
 	    });
 	    
 	    searchDialog.showAndWait();
 	}
 	
-	public void searchByTag(ActionEvent event) throws IOException {
+	public void searchByTag(ActionEvent event) throws IOException { //single tag
 		Dialog<Pair<String, String>> searchDialog = new Dialog<>();
 		searchDialog.setTitle("Search by Tag");
 		searchDialog.setHeaderText("Enter the tag pair you want to search for:");
@@ -399,7 +419,6 @@ public class UserController {
 	    searchGrid.add(new Label("Type"), 0, 0);
 	    searchGrid.add(tagName, 1, 1);
 	    searchGrid.add(new Label("Name"), 1, 0);
-	    searchGrid.add(tagType, 0, 1);
 	    
 	    searchDialog.getDialogPane().setContent(searchGrid);
 	    
@@ -412,25 +431,110 @@ public class UserController {
 	            Alert alert = new Alert(AlertType.ERROR);
 	            alert.setTitle("Search by Tag");
 	            alert.setHeaderText("Empty Type or Name Entry");
-	            alert.setContentText("Cannot have empty tags!");
+	            alert.setContentText("One or more of the required fields are left empty!");
 	            alert.showAndWait();
 	            event.consume(); // Prevent dialog from closing
 	        }
 	        else {
-	        	//if no match found: errormsg, no match found, no new window
-	    		//implement way to create new temporary list of photos to be shown in album.fxml
-	        	
 	    		try {
+	    			ObservableList<Photo> newSearchList = user.searchByTags(enteredType, enteredName);
+	    			
 					root = FXMLLoader.load(getClass().getResource("/View/Search.fxml"));
-				} catch (IOException e) {
+					
+					SearchController newSearchController = (new FXMLLoader(getClass().getResource("/View/Search.fxml"))).getController();
+					newSearchController.searchMatches = newSearchList;
+					
+					Stage newStage = new Stage();
+		    		newStage.setTitle("uPhotos");
+		    		scene = new Scene(root,640,480);
+		    		newStage.setScene(scene);
+		    		newStage.show();
+	    		} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-	    		Stage newStage = new Stage();
-	    		newStage.setTitle("uPhotos");
-	    		scene = new Scene(root,640,480);
-	    		newStage.setScene(scene);
-	    		newStage.show();
+	        }
+	    });
+	    
+	    searchDialog.showAndWait();
+	}
+	
+	public void searchByTagMultiple(ActionEvent event) throws IOException {
+		Dialog<Pair<String, String>> searchDialog = new Dialog<>();
+		searchDialog.setTitle("Search by Tag");
+		searchDialog.setHeaderText("Enter the tag pair you want to search for:");
+		
+		ButtonType okButton = new ButtonType("OK", ButtonData.OK_DONE);
+		searchDialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
+		
+		GridPane searchGrid = new GridPane();
+		searchGrid.setHgap(20);
+		searchGrid.setVgap(20);
+		searchGrid.setPadding(new Insets(20, 150, 10, 10));
+		
+		TextField tag1Type = new TextField();
+	    TextField tag1Name = new TextField();
+	    TextField tag2Type = new TextField();
+	    TextField tag2Name = new TextField();
+	    String andOr[] = {"AND", "OR"};
+	    ComboBox comboBox = new ComboBox(FXCollections.observableArrayList(andOr));
+	    comboBox.setValue("AND");
+	    
+	    searchGrid.add(tag1Type, 0, 1);
+	    searchGrid.add(new Label("Type"), 0, 0);
+	    searchGrid.add(tag1Name, 1, 1);
+	    searchGrid.add(new Label("Name"), 1, 0);
+	    searchGrid.add(tag2Type, 0, 3);
+	    searchGrid.add(new Label("Type"), 0, 2);
+	    searchGrid.add(tag2Name, 1, 3);
+	    searchGrid.add(new Label("Name"), 1, 2);
+	    searchGrid.add(comboBox, 2, 1);
+	    
+	    searchDialog.getDialogPane().setContent(searchGrid);
+	    
+	    Button ok = (Button) searchDialog.getDialogPane().lookupButton(okButton);
+	    ok.addEventFilter(ActionEvent.ACTION, mouseClickEvent -> {
+	        String enteredType1 = tag1Type.getText().strip();
+	        String enteredName1 = tag1Name.getText().strip();
+	        String enteredType2 = tag2Type.getText().strip();
+	        String enteredName2 = tag2Name.getText().strip();
+	        String junctionType = (String) comboBox.getValue();
+	        System.out.println(junctionType);
+	        
+	        if (enteredType1.isEmpty() || enteredName1.isEmpty()
+	        		|| enteredType2.isEmpty() || enteredName2.isEmpty()) {
+	            Alert alert = new Alert(AlertType.ERROR);
+	            alert.setTitle("Search by Tag");
+	            alert.setHeaderText("Empty Type or Name Entry");
+	            alert.setContentText("One or more of the required fields are left empty!");
+	            alert.showAndWait();
+	            event.consume(); // Prevent dialog from closing
+	        }
+	        else {
+	    		try {
+	    			ObservableList<Photo> newSearchList;
+	    			if (junctionType.equals("AND")) {
+	    				newSearchList = user.searchByTags(enteredType1, enteredName1, enteredType2, enteredName2, "AND");
+	    			}
+	    			else { //or
+	    				newSearchList = user.searchByTags(enteredType1, enteredName1, enteredType2, enteredName2, "OR");
+	    			}
+	    			
+					root = FXMLLoader.load(getClass().getResource("/View/Search.fxml"));
+					
+					//null exception
+					//SearchController newSearchController = (new FXMLLoader(getClass().getResource("/View/Search.fxml"))).getController();
+					//newSearchController.searchMatches = newSearchList;
+					
+					Stage newStage = new Stage();
+		    		newStage.setTitle("uPhotos");
+		    		scene = new Scene(root,640,480);
+		    		newStage.setScene(scene);
+		    		newStage.show();
+	    		} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 	        }
 	    });
 	    
