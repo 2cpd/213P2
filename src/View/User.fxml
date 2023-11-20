@@ -83,7 +83,8 @@
          <contextMenu>
             <ContextMenu>
               <items>
-                <MenuItem mnemonicParsing="false" text="Unspecified Action" />
+                  <MenuItem mnemonicParsing="false" onAction="#goToAlbum_context" text="View contents of an album" />
+                  <MenuItem mnemonicParsing="false" onAction="#deleteAlbum_context" text="Delete album" />
               </items>
             </ContextMenu>
          </contextMenu></ListView>
