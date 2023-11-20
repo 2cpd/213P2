@@ -56,11 +56,11 @@
             <Menu mnemonicParsing="false" text="Photo">
                <items>
                   <MenuItem mnemonicParsing="false" onAction="#getInfo" text="Get info..." />
-                  <MenuItem mnemonicParsing="false" onAction="#openFile" text="Copy..." />
-                  <MenuItem mnemonicParsing="false" onAction="#openFile" text="Paste..." />
-                  <MenuItem mnemonicParsing="false" onAction="#openFile" text="Caption..." />
-                  <MenuItem mnemonicParsing="false" onAction="#openFile" text="Add tag..." />
-                  <MenuItem mnemonicParsing="false" onAction="#openFile" text="Delete tag..." />
+                  <MenuItem mnemonicParsing="false" onAction="#copy" text="Copy..." />
+                  <MenuItem mnemonicParsing="false" onAction="#paste" text="Paste..." />
+                  <MenuItem mnemonicParsing="false" onAction="#caption" text="Caption..." />
+                  <MenuItem mnemonicParsing="false" onAction="#addTag" text="Add tag..." />
+                  <MenuItem mnemonicParsing="false" onAction="#delTag" text="Delete tag..." />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Back">
