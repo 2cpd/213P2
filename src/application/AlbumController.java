@@ -76,7 +76,7 @@ public class AlbumController {
 	@FXML
 	public void initialize() throws IOException {
 		albumUser = new User(LoginController.getName());
-		photoList.setItems(currAlbum.getAlbumNameListByFile());
+		photoList.setItems(currAlbum.getPhotoNameListByFile());
 	}
 	
 	public void displaySelected() { //done
