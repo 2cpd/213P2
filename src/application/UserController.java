@@ -52,7 +52,7 @@ public class UserController {
 	private Parent root;
 	public static User user;
 	private String username;
-	private Album selectedAlbum;
+	public static String selectedAlbumName;
 	
 	@FXML
 	MenuBar myMenuBar;
@@ -70,11 +70,8 @@ public class UserController {
 	
 	@FXML
 	public void initialize() throws IOException {
-		//System.out.println("Hello "+LoginController.getName());
-		//System.out.println("Initialize " + user.getUsername());
 		user = new User(LoginController.getName());
 		listOfAlbums.setItems(user.getAlbumNameListByFile());
-		//user = new User(User.getUsername());
 	}
 	
 	/*
@@ -242,12 +239,10 @@ public class UserController {
         if (user.deleteAlbum(name)) {
         	//String deletedName = listOfAlbums.getItems().remove(indexOfTargetAlbum);
         	
-		 	FileInputStream file = new FileInputStream("data/album.txt");
-			//String readText = file.read();
+		 	FileInputStream file = new FileInputStream("data/"+ username +"album.txt");
 			int ch;
 			int commaCount = 0;
 			FileOutputStream tempfile = new FileOutputStream("data/tempalbum.txt");
-			//listofnames.getItems().add(admin.usernameList().size());
 			while ((ch = file.read()) != -1) {
 				if (ch == ',') commaCount++;
 				if (commaCount-1 != indexOfTargetAlbum)
@@ -257,11 +252,11 @@ public class UserController {
 			tempfile.close();
 			file.close();
 			
-			File oldFile = new File("data/album.txt");
+			File oldFile = new File("data/"+ username +"album.txt");
 			oldFile.delete();
 			
 			FileInputStream tempUserFile = new FileInputStream("data/tempalbum.txt");
-			FileOutputStream newfile = new FileOutputStream("data/album.txt");
+			FileOutputStream newfile = new FileOutputStream("data/"+ username +"album.txt");
 			while ((ch = tempUserFile.read()) != -1) {
 				newfile.write(ch);
 			}
@@ -281,65 +276,115 @@ public class UserController {
 			alert.showAndWait();
 			return;
         }
-        
-        
-        
 	}
 	
 	public void renameAlbum(ActionEvent event) throws IOException {
 		//if name match: ask for new name
-		//else if nothing entered/nomatch: errormsg
-		Dialog<Pair<String, String>> renameDialog = new Dialog<>();
-		renameDialog.setTitle("Rename Album");
-		renameDialog.setHeaderText("Enter the name of the album you want to change:");
-		
-		ButtonType okButton = new ButtonType("OK", ButtonData.OK_DONE);
-		renameDialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
-		
-		GridPane renameGrid = new GridPane();
-		renameGrid.setHgap(20);
-		renameGrid.setVgap(20);
-		renameGrid.setPadding(new Insets(20, 150, 10, 10));
-		
-		TextField oldAlbumName = new TextField();
-	    TextField newAlbumName = new TextField();
-	    
-	    renameGrid.add(oldAlbumName, 0, 1);
-	    renameGrid.add(new Label("Original Name"), 0, 0);
-	    renameGrid.add(newAlbumName, 1, 1);
-	    renameGrid.add(new Label("New Name"), 1, 0);
-	    
-	    renameDialog.getDialogPane().setContent(renameGrid);
-	    
-	    Button ok = (Button) renameDialog.getDialogPane().lookupButton(okButton);
-	    ok.addEventFilter(ActionEvent.ACTION, mouseClickEvent -> {
-	        String oldName = oldAlbumName.getText().strip();
-	        String newName = newAlbumName.getText().strip();
-	        
-	        if (oldName.isEmpty() || newName.isEmpty()) {
-	            Alert alert = new Alert(AlertType.ERROR);
-	            alert.setTitle("Rename Album");
-	            alert.setHeaderText("Empty Name Entry");
-	            alert.setContentText("Cannot rename an album to an empty name!");
-	            alert.showAndWait();
-	            event.consume(); // Prevent dialog from closing
-	        }
-	        else {
-	        	int albumIndex = user.getAlbumIndex(oldName);
-	    		if (user.renameAlbum(oldName, newName)) {
-	    			listOfAlbums.getItems().set(albumIndex, newName);
-	    		} else {
-	    			Alert alert = new Alert(AlertType.ERROR);
-	    			alert.setTitle("Rename Album");
-	    			alert.setHeaderText("Error");
-	    			alert.setContentText("Please check if the original album name is entered correctly!");
-	    			alert.showAndWait();
-	    			return;
-	    		}
-	        }
-	    });
-	    
-	    renameDialog.showAndWait();
+				//else if nothing entered/nomatch: errormsg
+				Dialog<Pair<String, String>> renameDialog = new Dialog<>();
+				renameDialog.setTitle("Rename Album");
+				renameDialog.setHeaderText("Enter the name of the album you want to change:");
+				
+				ButtonType okButton = new ButtonType("OK", ButtonData.OK_DONE);
+				renameDialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
+				
+				GridPane renameGrid = new GridPane();
+				renameGrid.setHgap(20);
+				renameGrid.setVgap(20);
+				renameGrid.setPadding(new Insets(20, 150, 10, 10));
+				
+				TextField oldAlbumName = new TextField();
+			    TextField newAlbumName = new TextField();
+			    
+			    renameGrid.add(oldAlbumName, 0, 1);
+			    renameGrid.add(new Label("Original Name"), 0, 0);
+			    renameGrid.add(newAlbumName, 1, 1);
+			    renameGrid.add(new Label("New Name"), 1, 0);
+			    
+			    renameDialog.getDialogPane().setContent(renameGrid);
+			    
+			    Button ok = (Button) renameDialog.getDialogPane().lookupButton(okButton);
+			    ok.addEventFilter(ActionEvent.ACTION, mouseClickEvent -> {
+			        String oldName = oldAlbumName.getText().strip();
+			        String newName = newAlbumName.getText().strip();
+			        
+			        if (oldName.isEmpty() || newName.isEmpty()) {
+			            Alert alert = new Alert(AlertType.ERROR);
+			            alert.setTitle("Rename Album");
+			            alert.setHeaderText("Empty Name Entry");
+			            alert.setContentText("Cannot rename an album to an empty name!");
+			            alert.showAndWait();
+			            event.consume(); // Prevent dialog from closing
+			        }
+			        else {
+			        	int indexOfTargetAlbum = user.getAlbumIndex(oldName);
+		    			System.out.println(indexOfTargetAlbum);
+		    	        if (indexOfTargetAlbum == -1) {
+		    	        	Alert alert = new Alert(AlertType.ERROR);
+		    				alert.setTitle("Delete Album");
+		    				alert.setHeaderText("Invalid Name Entry");
+		    				alert.setContentText("No album of that name exists!");
+		    				alert.showAndWait();
+		    				return;
+		    	        }
+		    	        
+			    		if (user.renameAlbum(oldName, newName)) {
+							try {
+								FileInputStream file = new FileInputStream("data/"+ username +"album.txt");
+								//String readText = file.read();
+				    			int ch;
+				    			int commaCount = 0;
+				    			FileOutputStream tempfile = new FileOutputStream("data/tempalbum.txt");
+				    			//listofnames.getItems().add(admin.usernameList().size());
+				    			while ((ch = file.read()) != -1) {
+				    				if (ch == ',') 
+				    					commaCount++;
+				    				if (commaCount-1 != indexOfTargetAlbum)
+				    					tempfile.write(ch);
+				    			}
+				    			
+				    			tempfile.close();
+				    			file.close();
+				    			
+				    			File oldFile = new File("data/"+ username +"album.txt");
+				    			oldFile.delete();
+				    			
+				    			FileInputStream tempUserFile = new FileInputStream("data/tempalbum.txt");
+				    			FileOutputStream newfile = new FileOutputStream("data/"+ username +"album.txt");
+				    			while ((ch = tempUserFile.read()) != -1) {
+				    				newfile.write(ch);
+				    			}
+				    			
+				    			tempUserFile.close();
+				    			newfile.close();
+				    			File ofile = new File ("data/tempalbum.txt");
+				    			ofile.delete();
+				    			initialize();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+			    		}
+			    		else {
+			    			Alert alert = new Alert(AlertType.ERROR);
+			    			alert.setTitle("Rename Album");
+			    			alert.setHeaderText("Error");
+			    			alert.setContentText("Please check if the original album name is entered correctly!");
+			    			alert.showAndWait();
+			    			return;
+			    		}
+			        }
+			    });
+			    
+			    renameDialog.showAndWait();
+		        
+	}
+	
+	/*
+	 * @return the name of selected goToAlbum name
+	 */
+	public static String getAlbumName() {
+		return selectedAlbumName;
 	}
 	
 	public void goToAlbum(ActionEvent event) throws IOException { //done
@@ -366,6 +411,7 @@ public class UserController {
 			alert.showAndWait();
 			return;
         } else {
+        	selectedAlbumName = goToAlbumName;
     		stage = (Stage) myMenuBar.getScene().getWindow();
     		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/Album.fxml"));
             scene = new Scene(fxmlLoader.load(), 640, 480);
@@ -373,10 +419,94 @@ public class UserController {
     		controller.setPrescene(myMenuBar.getScene());
             stage.setScene(scene);
     		stage.show();
-    		//TBI: navigate to correct album
-        }
-        //listOfAlbums = tempList;
+        }      
+	}
+	
+	public void deleteAlbum_context(ActionEvent event) throws IOException {
+		String name = listOfAlbums.getSelectionModel().getSelectedItem();
+		
+		if (name.isEmpty()){
+        	Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Delete Album");
+			alert.setHeaderText("Empty Name Entry");
+			alert.setContentText("Cannot delete an album with an empty name!");
+			alert.showAndWait();
+			return;
+		}
         
+        int indexOfTargetAlbum = user.getAlbumIndex(name);
+        if (indexOfTargetAlbum == -1) {
+        	Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Delete Album");
+			alert.setHeaderText("Invalid Name Entry");
+			alert.setContentText("No album of that name exists!");
+			alert.showAndWait();
+			return;
+        }
+        
+        if (user.deleteAlbum(name)) {
+        	//String deletedName = listOfAlbums.getItems().remove(indexOfTargetAlbum);
+        	
+		 	FileInputStream file = new FileInputStream("data/"+ username +"album.txt");
+			int ch;
+			int commaCount = 0;
+			FileOutputStream tempfile = new FileOutputStream("data/tempalbum.txt");
+			while ((ch = file.read()) != -1) {
+				if (ch == ',') commaCount++;
+				if (commaCount-1 != indexOfTargetAlbum)
+				tempfile.write(ch);
+			}
+			
+			tempfile.close();
+			file.close();
+			
+			File oldFile = new File("data/"+ username +"album.txt");
+			oldFile.delete();
+			
+			FileInputStream tempUserFile = new FileInputStream("data/tempalbum.txt");
+			FileOutputStream newfile = new FileOutputStream("data/"+ username +"album.txt");
+			while ((ch = tempUserFile.read()) != -1) {
+				newfile.write(ch);
+			}
+			
+			tempUserFile.close();
+			newfile.close();
+			File ofile = new File ("data/tempalbum.txt");
+			ofile.delete();
+			initialize();
+        	
+        	
+        	
+        	Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Delete Album");
+			alert.setHeaderText("Success");
+			alert.setContentText("Album has been deleted successfully.");
+			alert.showAndWait();
+			return;
+        }
+
+	}
+	
+	public void goToAlbum_context(ActionEvent event) throws IOException {
+		String goToAlbumName = listOfAlbums.getSelectionModel().getSelectedItem();
+        //ListView<String> tempList = listOfAlbums;
+        if (user.getAlbumByName(goToAlbumName) == null) {
+        	Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Enter Album");
+			alert.setHeaderText("Error");
+			alert.setContentText("Please check if the album name is entered correctly!");
+			alert.showAndWait();
+			return;
+        } else {
+        	selectedAlbumName = goToAlbumName;
+    		stage = (Stage) myMenuBar.getScene().getWindow();
+    		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/Album.fxml"));
+            scene = new Scene(fxmlLoader.load(), 640, 480);
+            AlbumController controller = fxmlLoader.getController();
+    		controller.setPrescene(myMenuBar.getScene());
+            stage.setScene(scene);
+    		stage.show();
+        }
 	}
 	
 	public void searchByDate(ActionEvent event) throws IOException { //NEEDS WORK
