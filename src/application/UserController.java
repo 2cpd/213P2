@@ -44,6 +44,11 @@ import javafx.scene.Node;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+/*
+ * AlbumController class
+ * @author Chris Li
+ * @author Tony Lu
+ */
 public class UserController {
 	
 	private Stage stage;
@@ -602,9 +607,7 @@ public class UserController {
 	    			ObservableList<Photo> newSearchList = user.searchByCal(fromDateStringForm,toDateStringForm);
 	    			root = FXMLLoader.load(getClass().getResource("/View/Search.fxml"));
 					
-	    			//null exception
-					//SearchController newSearchController = (new FXMLLoader(getClass().getResource("/View/Search.fxml"))).getController();
-					//newSearchController.searchMatches = newSearchList;
+	    			
 					
 					Stage newStage = new Stage();
 		    		newStage.setTitle("uPhotos");

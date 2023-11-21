@@ -14,6 +14,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
 
+/*
+ * AlbumController class
+ * @author Chris Li
+ * @author Tony Lu
+ */
 public class Photos extends Application {
 	@Override
 	public void start(Stage stage) {

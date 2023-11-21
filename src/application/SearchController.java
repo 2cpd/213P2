@@ -2,6 +2,8 @@ package application;
 
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,12 +35,17 @@ import Model.Album;
 import Model.Photo;
 import Model.User;
 
+/*
+ * AlbumController class
+ * @author Chris Li
+ * @author Tony Lu
+ */
 public class SearchController {
 	
 	private Stage stage;
 	private Scene scene;
 	private Parent root;
-	private User albumUser = UserController.user;
+	private static User albumUser;
 	private String selectedPath = "";
 	
 	ObservableList<Photo> searchMatches;
@@ -59,7 +66,15 @@ public class SearchController {
     //private ListView<String> photoList = new ListView<String>(albumUser.getPhotoNameList(UserController.goToAlbumName));
 	private ListView<String> photoList;
 	
-	public void displaySelected() { //done?
+	@FXML
+	public void initialize() throws IOException {
+		albumUser = new User(LoginController.getName());
+		//for (Photo p:searchMatches) {
+			//photoList.getItems().add(p.getNamePhoto());
+		//}
+	}
+	
+	public void displaySelected() {
 		photoList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
 		    @Override
 		    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -68,7 +83,7 @@ public class SearchController {
 		        imageView.setImage(image);
 		        
 		        String selectedFileName = selectedPath.substring(selectedPath.lastIndexOf("/")+1);
-		        //String selected Caption = ...
+		        //String selectedCaption = ...
 		        
 		        filenameDisplay.setText(selectedFileName);
 		        //captionDisplay.setText...
@@ -85,7 +100,7 @@ public class SearchController {
 		alert.showAndWait();
 	}
 	
-	public void addAlbum(ActionEvent event) { //NEEDS WORK
+	public void addAlbum(ActionEvent event) throws IOException{
 		TextInputDialog inputDialog = new TextInputDialog();
 		inputDialog.setTitle("New Album");
 		inputDialog.setHeaderText("New Album");
@@ -119,10 +134,86 @@ public class SearchController {
 			return;
 		}
 		else {
-			Album newSearchAlbum = new Album(name);
-			//for loop: add photos in list
-			//ArrayList<Album> albums in User
-			//ArrayList<Photo> albumPhoto in Album
+			//write new album name to useralbum.txt
+			File f = new File("data/"+ albumUser.getUsername() +"album.txt");
+			if(!f.exists() && !f.isDirectory()) { 
+				FileOutputStream createfile = new FileOutputStream("data/"+ albumUser.getUsername() +"album.txt");
+				createfile.close();
+			}
+			
+			
+			FileInputStream file = new FileInputStream("data/"+ albumUser.getUsername() +"album.txt");
+			int ch;
+			
+			FileOutputStream tempfile = new FileOutputStream("data/tempalbum.txt");
+			while ((ch = file.read()) != -1) {
+				tempfile.write(ch);
+			}
+			
+			
+			char[] tempArray = name.toCharArray();
+			tempfile.write(',');
+			for (int i = 0; i < tempArray.length; i++) {
+				tempfile.write(tempArray[i]);
+			}
+			
+			tempfile.close();
+			file.close();
+			
+			File oldFile = new File("data/"+ albumUser.getUsername() +"album.txt");
+			oldFile.delete();
+			
+			FileInputStream tempUserFile = new FileInputStream("data/tempalbum.txt");
+			FileOutputStream newfile = new FileOutputStream("data/"+ albumUser.getUsername() +"album.txt");
+			while ((ch = tempUserFile.read()) != -1) {
+				newfile.write(ch);
+			}
+			
+			tempUserFile.close();
+			newfile.close();
+			File ofile = new File ("data/tempalbum.txt");
+			ofile.delete();
+			
+			//write new photos to userphoto.txt
+			
+			for (Photo p:searchMatches) {
+				String path = p.getNamePhoto(); //Q: is name path?
+				
+				File f2 = new File("data/"+ albumUser.getUsername()+ name +"photo.txt");
+				if(!f2.exists() && !f2.isDirectory()) { 
+					FileOutputStream createfile = new FileOutputStream("data/"+ albumUser.getUsername()+ name +"photo.txt");
+					createfile.close();
+				}
+				
+				FileInputStream openfile = new FileInputStream("data/"+ albumUser.getUsername()+ name +"photo.txt");
+				tempfile = new FileOutputStream("data/tempphoto.txt");
+				while ((ch = openfile.read()) != -1) {
+					tempfile.write(ch);
+				}
+				
+				tempArray = path.toCharArray();
+				tempfile.write(',');
+				for (int i = 0; i < tempArray.length; i++) {
+					tempfile.write(tempArray[i]);
+				}
+				
+				tempfile.close();
+				openfile.close();
+				
+				File oldFile2 = new File("data/"+ albumUser.getUsername()+ name +"photo.txt");
+				oldFile2.delete();
+				
+				tempUserFile = new FileInputStream("data/tempphoto.txt");
+				FileOutputStream newfile2 = new FileOutputStream("data/"+ albumUser.getUsername()+ name +"photo.txt");
+				while ((ch = tempUserFile.read()) != -1) {
+					newfile2.write(ch);
+				}
+				
+				tempUserFile.close();
+				newfile2.close();
+				ofile = new File ("data/tempphoto.txt");
+				ofile.delete();
+			}
 		}
 	}
 }

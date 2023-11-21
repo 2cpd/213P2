@@ -19,6 +19,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.Node;
 import javafx.stage.Stage;
 
+/*
+ * AlbumController class
+ * @author Chris Li
+ * @author Tony Lu
+ */
 public class LoginController {
 	
 	private Stage stage;

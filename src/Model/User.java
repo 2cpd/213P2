@@ -16,6 +16,10 @@ import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+/*
+ * @author Chris Li
+ * @author Tony Lu
+ */
 public class User implements Serializable{
 	
 	//public static final long serialVersionUID = 1L;
@@ -54,7 +58,7 @@ public class User implements Serializable{
 			if (albumName.equals(albums.get(i).getAlbumName())) return false;
 		}
 		
-		albums.add(new Album(albumName));
+		albums.add(new Album(albumName, username));
 		return true;
 	}
 	
@@ -141,10 +145,10 @@ public class User implements Serializable{
 	 * @param photo photo itself
 	 * @return return if valid or not
 	 */
-	public boolean deletePhoto(String albumName, Photo photo) {
+	public boolean deletePhoto(String albumName, String photoName) {
 		for (int i = 0; i < albums.size(); i++) {
 			if (albumName.equals(albums.get(i).getAlbumName())) {
-				if (!(albums.get(i).deletePhoto(photo))) {
+				if (!(albums.get(i).deletePhoto(photoName))) {
 					return false;
 				} else {
 					return true;
@@ -223,11 +227,12 @@ public class User implements Serializable{
 	public boolean copyPhoto (String original, String target, String namePhoto) {
 		String originalAlbumS = "";
 		String targetAlbumS = "";
-		Album originalAlbum = new Album(original);
+		Album originalAlbum = new Album(original, username);
 		int originalIndex = -1;
 		int targetIndex = -1;
 		for (int i = 0; i < albums.size(); i++) {
 			if (albums.get(i).getAlbumName().equals(original)) {
+				System.out.println("original");
 				originalAlbumS = albums.get(i).getAlbumName();
 				originalAlbum = albums.get(i);
 				originalIndex = i;
@@ -236,14 +241,21 @@ public class User implements Serializable{
 			if (albums.get(i).getAlbumName().equals(target)) {
 				targetAlbumS = albums.get(i).getAlbumName();
 				//targetAlbum = albums.get(i);
+				System.out.println("targer");
 				targetIndex = i;
 			}
 		}
 		
-		if (originalAlbumS.equals("")|| targetAlbumS.equals("")) return false;
+		if (originalAlbumS.equals("")|| targetAlbumS.equals("")) {
+			System.out.println("Both");
+			return false;
+		}
 		/**************************/
 		
-		if (!originalAlbum.hasPhoto(namePhoto)) return false;
+		if (!originalAlbum.hasPhoto(namePhoto)) {
+			System.out.println("Doesnothaveit");
+			return false;
+		}
 		
 		Photo tempPhoto = albums.get(originalIndex).getPhoto(namePhoto);
 		albums.get(targetIndex).addPhoto(tempPhoto);
@@ -261,7 +273,7 @@ public class User implements Serializable{
 	public boolean movePhoto (String original, String target, String namePhoto) {
 		String originalAlbumS = "";
 		String targetAlbumS = "";
-		Album originalAlbum = new Album(original);
+		Album originalAlbum = new Album(original, username);
 		int originalIndex = -1;
 		int targetIndex = -1;
 		for (int i = 0; i < albums.size(); i++) {
@@ -285,7 +297,7 @@ public class User implements Serializable{
 		
 		Photo tempPhoto = albums.get(originalIndex).getPhoto(namePhoto);
 		albums.get(targetIndex).addPhoto(tempPhoto);
-		albums.get(originalIndex).deletePhoto(tempPhoto);
+		albums.get(originalIndex).deletePhoto(tempPhoto.getNamePhoto());
 		
 		return true;
 	}
@@ -468,7 +480,7 @@ public class User implements Serializable{
 		//Make sure next time running the program can detect the duplicate name
 		albums.clear();
 		for (int i = 0; i < finalList.size(); i++) {
-			albums.add(new Album(finalList.get(i)));
+			albums.add(new Album(finalList.get(i), username));
 		}
 		return FXCollections.observableList(finalList);
 	}
