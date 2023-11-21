@@ -1,0 +1,1 @@
+,file:/C:/Users/lhy34/eclipse-workspace/Photos40/data/Bliss.jpg,file:/C:/Users/lhy34/eclipse-workspace/Photos40/data/Hills.jpg,file:/C:/Users/lhy34/eclipse-workspace/Photos40/data/Lilies.jpg,file:/C:/Users/lhy34/eclipse-workspace/Photos40/data/Sunset.jpg,file:/C:/Users/lhy34/eclipse-workspace/Photos40/data/Winter.jpg
